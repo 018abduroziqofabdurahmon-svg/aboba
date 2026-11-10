@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ABOBA // Web Sorcery — HTML, CSS & JS Tricks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-cyan">
+  <!-- Custom Cursor -->
+  <div class="custom-cursor" id="cursorDot"></div>
+  <div class="custom-cursor-follower" id="cursorFollower"></div>
+
+  <!-- Interactive Background Canvas -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- Hidden SVG Filters for Liquid Gooey & Displacement Effects -->
+  <svg class="svg-filters" aria-hidden="true">
+    <defs>
+      <!-- Gooey Metaball Filter -->
+      <filter id="goo">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+        <feColorMatrix in="blur" mode="matrix" values="
+          1 0 0 0 0
+          0 1 0 0 0
+          0 0 1 0 0
+          0 0 0 20 -9" result="goo" />
+        <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+      </filter>
+      <!-- Glow Filter -->
+      <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand" id="brandLogo" title="Click for synth melody!">
+        <span class="brand-glitch" data-text="ABOBA">ABOBA</span>
+        <span class="brand-tag">v2.0 // FX LAB</span>
+      </div>
+
+      <nav class="nav-links">
+        <a href="#showcase" class="nav-link active">Showcase</a>
+        <a href="#playground" class="nav-link">Live Studio</a>
+        <a href="#matrix-terminal" class="nav-link">Terminal</a>
+        <a href="#soundboard" class="nav-link">Web Audio</a>
+      </nav>
+
+      <div class="nav-controls">
+        <!-- Sound FX Toggle -->
+        <button id="soundToggle" class="ctrl-btn" title="Toggle Web Audio SFX (Key: M)">
+          <span class="icon" id="soundIcon">🔊</span>
+          <span class="label">SFX: ON</span>
+        </button>
+
+        <!-- Color Scheme Switcher -->
+        <div class="color-picker-dropdown">
+          <button class="ctrl-btn color-trigger" id="colorTrigger" title="Select Theme Glow">
+            <span class="theme-dot"></span>
+            <span class="label">Glow</span>
+          </button>
+          <div class="theme-menu" id="themeMenu">
+            <button class="theme-opt" data-theme="theme-cyan"><span class="dot cyan"></span> Cyber Cyan</button>
+            <button class="theme-opt" data-theme="theme-purple"><span class="dot purple"></span> Neon Violet</button>
+            <button class="theme-opt" data-theme="theme-green"><span class="dot green"></span> Matrix Jade</button>
+            <button class="theme-opt" data-theme="theme-amber"><span class="dot amber"></span> Solar Flame</button>
+            <button class="theme-opt" data-theme="theme-crimson"><span class="dot crimson"></span> Tokyo Red</button>
+          </div>
+        </div>
+
+        <!-- Shockwave trigger button -->
+        <button id="shockwaveBtn" class="ctrl-btn pulse-glow" title="Detonate Particle Blast (Spacebar)">
+          💥 Blast
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-ping"></span>
+        <span>HTML5 • CSS3 3D • MODERN JS • WEB AUDIO</span>
+      </div>
+
+      <h1 class="hero-title">
+        THE MAGIC OF <br>
+        <span class="scramble-text" id="heroScramble" data-original="ABOBA WEB LAB">ABOBA WEB LAB</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        A masterclass in modern creative frontend engineering. Zero bloated frameworks, pure vanilla code, 
+        hardware-accelerated 3D transforms, fluid mathematical physics, and real-time audio synthesis.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#showcase" class="btn btn-primary magnetic-btn" id="exploreBtn">
+          <span>Explore 10 Cool Tricks</span>
+          <svg class="arrow-icon" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z"/></svg>
+        </a>
+        <button class="btn btn-secondary magnetic-btn" id="easterEggHintBtn">
+          <span>Type "aboba" on Keyboard</span>
+          <span class="key-badge">✨</span>
+        </button>
+      </div>
+
+      <!-- Real-time telemetry stats bar -->
+      <div class="telemetry-bar">
+        <div class="stat-item">
+          <span class="stat-label">FPS ENGINE</span>
+          <span class="stat-val" id="fpsDisplay">60 FPS</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">CANVAS PARTICLES</span>
+          <span class="stat-val" id="particleCount">120 ACTIVE</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">AUDIO ENGINE</span>
+          <span class="stat-val" id="audioStatus">WEB AUDIO 48kHz</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">PHYSICS GRAVITY</span>
+          <span class="stat-val" id="gravityStatus">NORMAL (Press 'G')</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3D Interactive Hero Orb / Device -->
+    <div class="hero-visual">
+      <div class="hologram-stage" id="heroStage">
+        <div class="hologram-ring ring-1"></div>
+        <div class="hologram-ring ring-2"></div>
+        <div class="hologram-ring ring-3"></div>
+        
+        <div class="interactive-core" id="interactiveCore">
+          <div class="core-inner">
+            <span class="core-logo">ABOBA</span>
+            <span class="core-sub">3D TILT ENGINE</span>
+          </div>
+          <div class="specular-glare"></div>
+        </div>
+
+        <div class="orbiting-nodes">
+          <div class="node node-html">&lt;HTML5&gt;</div>
+          <div class="node node-css">CSS3 3D</div>
+          <div class="node node-js">VANILLA.JS</div>
+          <div class="node node-audio">WEB-AUDIO</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Showcase Section: 10 Jaw-Dropping Tricks -->
+  <main class="showcase-section" id="showcase">
+    <div class="section-header">
+      <h2 class="section-title">
+        <span class="title-sub">// CURATED SHOWCASE</span>
+        10 Mind-Bending Frontend Tricks
+      </h2>
+      <p class="section-desc">Interact with each module below. Every trick runs natively with 100% vanilla code.</p>
+    </div>
+
+    <div class="tricks-grid">
+
+      <!-- TRICK 1: 3D Holographic Foil Card with Specular Lighting -->
+      <article class="trick-card" data-trick="holo">
+        <div class="trick-badge">TRICK #01 • CSS 3D & MATH</div>
+        <h3 class="trick-title">Holographic 3D Tilt Card</h3>
+        <p class="trick-desc">Tracks mouse pointer offset, calculates real-time pitch/yaw angles, and generates dynamic iridescent rainbow foil reflections via CSS variables.</p>
+        
+        <div class="trick-demo-area">
+          <div class="holo-card" id="holoCard">
+            <div class="holo-foil"></div>
+            <div class="holo-content">
+              <div class="chip"></div>
+              <div class="holo-logo">ABOBA VIP</div>
+              <div class="card-number">•••• •••• •••• 1337</div>
+              <div class="card-footer">
+                <span>HOLO SPECULAR ENGINE</span>
+                <span>EXP: ∞/∞</span>
+              </div>
+            </div>
+            <div class="holo-glare" id="holoGlare"></div>
+          </div>
+        </div>
+        <div class="trick-footer">
+          <span class="tech-tag">CSS <code>transform: perspective() rotateX() rotateY()</code></span>
+          <span class="tech-tag">Dynamic CSS Variables</span>
+        </div>
+      </article>
+
+      <!-- TRICK 2: Fluid Gooey Metaballs Physics -->
+      <article class="trick-card" data-trick="goo">
+        <div class="trick-badge">TRICK #02 • SVG MATRIX FILTER</div>
+        <h3 class="trick-title">SVG Liquid Gooey Physics</h3>
+        <p class="trick-desc">Uses SVG Gaussian blur and alpha contrast color matrix to fuse separate DOM elements into smooth organic liquid drops that stretch and coalesce.</p>
+        
+        <div class="trick-demo-area gooey-wrapper">
+          <div class="goo-container" id="gooContainer">
+            <div class="goo-ball main-ball" id="gooMain">ABOBA</div>
+            <div class="goo-ball sub-ball b1"></div>
+            <div class="goo-ball sub-ball b2"></div>
+            <div class="goo-ball sub-ball b3"></div>
+            <div class="goo-ball sub-ball b4"></div>
+          </div>
+          <div class="goo-controls">
+            <button class="mini-btn" id="burstGooBtn">Splash Drops</button>
+            <button class="mini-btn" id="toggleGooFilter">Toggle Filter</button>
+          </div>
+        </div>
+        <div class="trick-footer">
+          <span class="tech-tag">SVG <code>&lt;feColorMatrix&gt;</code></span>
+          <span class="tech-tag">Organic Blob Elasticity</span>
+        </div>
+      </article>
+
+      <!-- TRICK 3: Interactive 3D Rubik / Tesseract Hypercube -->
+      <article class="trick-card" data-trick="cube">
+        <div class="trick-badge">TRICK #03 • PURE CSS 3D SPACE</div>
+        <h3 class="trick-title">Interactive 3D Gyro-Cube</h3>
+        <p class="trick-desc">Click and drag inside the viewport to rotate this true 6-sided 3D geometric cube with mouse drag inertia and glass faces.</p>
+        
+        <div class="trick-demo-area cube-viewport" id="cubeViewport">
+          <div class="cube-scene">
+            <div class="cube3d" id="cube3d">
+              <div class="cube-face face-front"><span>HTML5</span></div>
+              <div class="cube-face face-back"><span>CSS3</span></div>
+              <div class="cube-face face-right"><span>JS</span></div>
+              <div class="cube-face face-left"><span>CANVAS</span></div>
+              <div class="cube-face face-top"><span>AUDIO</span></div>
+              <div class="cube-face face-bottom"><span>ABOBA</span></div>
+            </div>
+          </div>
+          <div class="cube-hint">Drag to spin • Click faces to beep</div>
+        </div>
+        <div class="trick-footer">
+          <span class="tech-tag"><code>transform-style: preserve-3d</code></span>
+          <span class="tech-tag">Inertial Quaternion Rotation</span>
+        </div>
+      </article>
+
+      <!-- TRICK 4: X-Ray Flashlight & Inverted Masking -->
+      <article class="trick-card" data-trick="xray">
+        <div class="trick-badge">TRICK #04 • CLIP-PATH SPOTLIGHT</div>
+        <h3 class="trick-title">Interactive X-Ray Flashlight</h3>
+        <p class="trick-desc">Move your cursor over the panel to shine a dynamic clipping mask flashlight revealing the hidden cyber-skeleton circuitry underneath.</p>
+        
+        <div class="trick-demo-area xray-container" id="xrayArea">
+          <!-- Top Surface Layer -->
+          <div class="xray-surface">
+            <h4>TOP SECRET ABOBA HARDWARE</h4>
+            <p>Hover cursor here to activate high-voltage fluoroscopy beam.</p>
+            <div class="xray-chip-mock">MICROPROCESSOR LOCK</div>
+          </div>
+          <!-- Underneath Hidden X-Ray Layer -->
+          <div class="xray-reveal" id="xrayReveal">
+            <h4>⚡ CYBER-CORE REV-9 CIRCUITRY ⚡</h4>
+            <p>[CLASSIFIED] QUANTUM LOGIC GATES: ACTIVE // 1.21 GW</p>
+            <div class="circuit-grid"></div>
+          </div>
+        </div>
+        <div class="trick-footer">
+          <span class="tech-tag"><code>clip-path: circle(...)</code></span>
+          <span class="tech-tag">Dynamic CSS Masking</span>
+        </div>
+      </article>
+
+      <!-- TRICK 5: Matrix Hacker Decryption & Scramble Text -->
+      <article class="trick-card" data-trick="scramble">
+        <div class="trick-badge">TRICK #05 • PROCEDURAL TYPOGRAPHY</div>
+        <h3 class="trick-title">Hacker Text Decryptor</h3>
+        <p class="trick-desc">Procedural character glyph cycling algorithm that smoothly resolves random glyphs into clean target strings with audio feedback.</p>
+        
+        <div class="trick-demo-area decrypt-box">
+          <div class="decrypt-display" id="decryptTarget">INITIALIZING PROTOCOL...</div>
+          <div class="decrypt-buttons">
+            <button class="mini-btn scramble-trigger" data-phrase="SYSTEM SECURED: ABOBA-99">Phrase 1</button>
+            <button class="mini-btn scramble-trigger" data-phrase="CYBERNETIC ENHANCEMENT ENGAGED">Phrase 2</button>
+            <button class="mini-btn scramble-trigger" data-phrase="PURE JAVASCRIPT IS PURE POWER">Phrase 3</button>
+          </div>
+          <input type="text" id="customScrambleInput" class="custom-input" placeholder="Type custom word & hit Enter..." maxlength="30">
+        </div>
+        <div class="trick-footer">
+          <span class="tech-tag">Algorithmic String Permutation</span>
+          <span class="tech-tag">Web Audio Morse/Beep Feed</span>
+        </div>
+      </article>
+
+      <!-- TRICK 6: Spring-Physics Magnetic Pull Buttons -->
+      <article class="trick-card" data-trick="magnetic">
+        <div class="trick-badge">TRICK #06 • INVERSE-SQUARE PHYSICS</div>
+        <h3 class="trick-title">Magnetic Forcefield Elements</h3>
+        <p class="trick-desc">Elements detect proximity of cursor and physically pull themselves towards the mouse with smooth damping, snapping back with spring physics.</p>
+        
+        <div class="trick-demo-area magnetic-zone" id="magneticZone">
+          <div class="magnetic-field-hint">Move cursor near these orbs:</div>
+          <div class="magnetic-row">
+            <button class="magnetic-item mag-1" data-strength="30">⚡ PULL</button>
+            <button class="magnetic-item mag-2" data-strength="45">🌌 GRAV</button>
+            <button class="magnetic-item mag-3" data-strength="60">💥 ABOBA</button>
+          </div>
+        </div>
+        <div class="trick-footer">
+          <span class="tech-tag">Vector Distance Calc (Euclidean)</span>
+          <span class="tech-tag">Spring Interpolation (Lerp)</span>
+        </div>
+      </article>
+
+      <!-- TRICK 7: Web Audio Synthesizer Pad -->
+      <article class="trick-card" data-trick="webaudio">
+        <div class="trick-badge">TRICK #07 • ZERO-AUDIO-FILE SYNTH</div>
+        <h3 class="trick-title">Web Audio Synthesizer</h3>
+        <p class="trick-desc">100% synthesized sound waves in real time. Oscillators (sine, triangle, saw, square) + ADSR Gain envelopes generated natively on your CPU.</p>
+        
+        <div class="trick-demo-area synth-pad-area">
+          <div class="synth-keys" id="synthKeys">
+            <button class="synth-key" data-note="261.63" data-name="C4"><span>C4</span></button>
+            <button class="synth-key" data-note="293.66" data-name="D4"><span>D4</span></button>
+            <button class="synth-key" data-note="329.63" data-name="E4"><span>E4</span></button>
+            <button class="synth-key" data-note="349.23" data-name="F4"><span>F4</span></button>
+            <button class="synth-key" data-note="392.00" data-name="G4"><span>G4</span></button>
+            <button class="synth-key" data-note="440.00" data-name="A4"><span>A4</span></button>
+            <button class="synth-key" data-note="493.88" data-name="B4"><span>B4</span></button>
+            <button class="synth-key accent-key" data-note="523.25" data-name="C5"><span>C5</span></button>
+          </div>
+          <div class="synth-wave-picker">
+            <label><input type="radio" name="wave" value="sine" checked> Sine</label>
+            <label><input type="radio" name="wave" value="triangle"> Triangle</label>
+            <label><input type="radio" name="wave" value="sawtooth"> Saw</label>
+            <label><input type="radio" name="wave" value="square"> Square</label>
+            <button class="mini-btn arpeggio-btn" id="arpeggioBtn">Arpeggiate ✨</button>
+          </div>
+        </div>
+        <div class="trick-footer">
+          <span class="tech-tag"><code>AudioContext</code> Oscillators</span>
+          <span class="tech-tag">ADSR Gain Envelopes</span>
+        </div>
+      </article>
+
+      <!-- TRICK 8: Kinetic Drag & Drop Gravity Physics Box -->
+      <article class="trick-card" data-trick="physics">
+        <div class="trick-badge">TRICK #08 • REAL-TIME NEWTONIAN PHYSICS</div>
+        <h3 class="trick-title">Interactive Gravity Chamber</h3>
+        <p class="trick-desc">Click anywhere in the sandbox to spawn physics orbs with velocity, restitution (bounciness), friction, and drag throw velocity.</p>
+        
+        <div class="trick-demo-area physics-sandbox" id="physicsSandbox">
+          <canvas id="sandboxCanvas"></canvas>
+          <div class="sandbox-overlay-hint">Click & drag to throw balls!</div>
+          <div class="sandbox-bar">
+            <button class="mini-btn" id="clearBallsBtn">Clear</button>
+            <button class="mini-btn" id="spawnBallsBtn">Rain 15 Balls</button>
+            <button class="mini-btn" id="antiGravBtn">Invert Gravity</button>
+          </div>
+        </div>
+        <div class="trick-footer">
+          <span class="tech-tag">Verlet Collision Detection</span>
+          <span class="tech-tag">Velocity Throw Momentum</span>
+        </div>
+      </article>
+
+      <!-- TRICK 9: Dynamic Morphing Glassmorphic Mesh Shader -->
+      <article class="trick-card" data-trick="glass">
+        <div class="trick-badge">TRICK #09 • ADVANCED CSS BACKDROP-FILTER</div>
+        <h3 class="trick-title">Liquid Glassmorphism & Caustic Blur</h3>
+        <p class="trick-desc">Multi-layered frosted glass with sub-pixel borders, inner shadows, and vibrant animated color mesh gradients creating pseudo-3D caustics.</p>
+        
+        <div class="trick-demo-area glass-demo-area">
+          <div class="mesh-background">
+            <div class="mesh-blob mb-1"></div>
+            <div class="mesh-blob mb-2"></div>
+            <div class="mesh-blob mb-3"></div>
+          </div>
+          <div class="glass-sheet" id="glassSheet">
+            <div class="glass-head">
+              <span class="glass-dot red"></span>
+              <span class="glass-dot yellow"></span>
+              <span class="glass-dot green"></span>
+              <span class="glass-title">aboba_os.sys</span>
+            </div>
+            <div class="glass-body">
+              <code>backdrop-filter: blur(16px) saturate(180%);</code>
+              <code>border: 1px solid rgba(255,255,255,0.18);</code>
+              <p>Drag the slider below to modulate the glass refraction in real-time:</p>
+              <div class="slider-row">
+                <label>Blur Depth: <span id="blurVal">16px</span></label>
+                <input type="range" id="blurSlider" min="2" max="40" value="16">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="trick-footer">
+          <span class="tech-tag"><code>backdrop-filter: blur()</code></span>
+          <span class="tech-tag">Animated CSS Gradients</span>
+        </div>
+      </article>
+
+      <!-- TRICK 10: Particle Black Hole Gravitational Vortex -->
+      <article class="trick-card" data-trick="vortex">
+        <div class="trick-badge">TRICK #10 • CANVASES & VECTOR FORCES</div>
+        <h3 class="trick-title">Black Hole Singularity</h3>
+        <p class="trick-desc">Hold down your mouse button inside the field to open a gravitational singularity that pulls every particle into an orbital accretion disk.</p>
+        
+        <div class="trick-demo-area vortex-box" id="vortexBox">
+          <canvas id="vortexCanvas"></canvas>
+          <div class="vortex-instructions">HOLD CLICK TO ENGAGE EVENT HORIZON</div>
+        </div>
+        <div class="trick-footer">
+          <span class="tech-tag">Orbital Angular Acceleration</span>
+          <span class="tech-tag">Radial Particle Velocity</span>
+        </div>
+      </article>
+
+    </div>
+  </main>
+
+  <!-- Interactive Live Studio / CSS Generator -->
+  <section class="playground-section" id="playground">
+    <div class="section-header">
+      <h2 class="section-title">
+        <span class="title-sub">// LIVE EXPERIMENT LAB</span>
+        Real-Time CSS & FX Studio
+      </h2>
+      <p class="section-desc">Tweak the knobs to mutate the 3D specimen in real time, then copy the auto-generated CSS snippet directly to your clipboard.</p>
+    </div>
+
+    <div class="studio-container">
+      <div class="studio-controls">
+        <div class="control-group">
+          <label for="ctrlRotateX">Rotate X: <span id="valRotateX">20deg</span></label>
+          <input type="range" id="ctrlRotateX" min="-60" max="60" value="20">
+        </div>
+
+        <div class="control-group">
+          <label for="ctrlRotateY">Rotate Y: <span id="valRotateY">-25deg</span></label>
+          <input type="range" id="ctrlRotateY" min="-60" max="60" value="-25">
+        </div>
+
+        <div class="control-group">
+          <label for="ctrlPerspective">Perspective: <span id="valPerspective">800px</span></label>
+          <input type="range" id="ctrlPerspective" min="300" max="1500" value="800">
+        </div>
+
+        <div class="control-group">
+          <label for="ctrlHue">Hue Rotate: <span id="valHue">0deg</span></label>
+          <input type="range" id="ctrlHue" min="0" max="360" value="0">
+        </div>
+
+        <div class="control-group">
+          <label for="ctrlGlow">Glow Radius: <span id="valGlow">30px</span></label>
+          <input type="range" id="ctrlGlow" min="0" max="80" value="30">
+        </div>
+
+        <div class="control-group">
+          <label for="shapeSelect">Clip Geometry:</label>
+          <select id="shapeSelect" class="custom-select">
+            <option value="none">Standard Rounded (No Clip)</option>
+            <option value="polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)">Cyber Pentagon</option>
+            <option value="polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)">Hexagon Shield</option>
+            <option value="polygon(0% 15%, 15% 0%, 85% 0%, 100% 15%, 100% 85%, 85% 100%, 15% 100%, 0% 85%)">Octagon Bevel</option>
+            <option value="polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)">Diamond Prism</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" id="copyCssBtn">
+          📋 Copy Generated CSS
+        </button>
+      </div>
+
+      <div class="studio-preview-box">
+        <div class="stage-3d" id="studioStage">
+          <div class="specimen-card" id="specimenCard">
+            <div class="specimen-shine"></div>
+            <div class="specimen-inner">
+              <div class="specimen-glyph">▲</div>
+              <h3>ABOBA MATRIX</h3>
+              <p>Hardware Accelerated Specimen</p>
+              <div class="specimen-badge">LIVE 3D</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-output">
+          <div class="code-output-header">GENERATED CSS</div>
+          <pre><code id="generatedCssCode">/* Live CSS updates here */</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Matrix Soundboard & Terminal -->
+  <section class="matrix-section" id="matrix-terminal">
+    <div class="section-header">
+      <h2 class="section-title">
+        <span class="title-sub">// INTERACTIVE CONSOLE</span>
+        Aboba Neural Terminal
+      </h2>
+      <p class="section-desc">Type commands into the terminal like <code>help</code>, <code>matrix</code>, <code>gravity</code>, <code>theme red</code>, <code>clear</code>, or <code>party</code>.</p>
+    </div>
+
+    <div class="terminal-window">
+      <div class="terminal-bar">
+        <div class="term-dots">
+          <span class="term-dot close"></span>
+          <span class="term-dot min"></span>
+          <span class="term-dot max"></span>
+        </div>
+        <div class="term-title">aboba@quantum-core:~ (zsh)</div>
+      </div>
+      <div class="terminal-body" id="termOutput">
+        <p class="term-line success">Welcome to ABOBA Terminal v2.4.0-release.</p>
+        <p class="term-line">System ready. Type <span class="cmd-highlight">help</span> to list available commands.</p>
+      </div>
+      <div class="terminal-input-row">
+        <span class="term-prompt">aboba&gt;</span>
+        <input type="text" id="termInput" class="term-input" placeholder="Type command here..." autofocus autocomplete="off">
+      </div>
+    </div>
+  </section>
+
+  <!-- Keyboard Shortcuts & Easter Eggs Modal Info -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="footer-logo">ABOBA // 2026</div>
+        <p>Crafted with pure HTML5, CSS3, JavaScript, Canvas, and Web Audio API.</p>
+      </div>
+
+      <div class="footer-shortcuts">
+        <div class="shortcut-title">HOTKEYS & SECRETS</div>
+        <div class="shortcut-pills">
+          <span class="key-pill"><kbd>SPACE</kbd> Particle Blast</span>
+          <span class="key-pill"><kbd>G</kbd> Toggle Zero Gravity</span>
+          <span class="key-pill"><kbd>M</kbd> Mute / Unmute Audio</span>
+          <span class="key-pill"><kbd>A-B-O-B-A</kbd> Confetti Storm</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div class="toast" id="toast">Notification</div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <script src="app.js"></script>
+</body>
+</html>
